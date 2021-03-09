@@ -6,25 +6,19 @@ class Scrabble {
 
     private final String word;
 
-    private static final String ONE_POINT_LETTERS = "AEIOULNRST";
-    private static final String TWO_POINTS_LETTERS = "DG";
-    private static final String THREE_POINTS_LETTERS = "BCMP";
-    private static final String FOUR_POINTS_LETTERS = "FHVWY";
-    private static final String FIVE_POINTS_LETTERS = "K";
-    private static final String EIGHT_POINTS_LETTERS = "JX";
-    private static final String TEN_POINTS_LETTERS = "QZ";
-
     private static final Map<Integer, String> valueLetterMap = new HashMap<>();
 
     public Scrabble(String word) {
         this.word = word;
-        valueLetterMap.put(1, ONE_POINT_LETTERS);
-        valueLetterMap.put(2, TWO_POINTS_LETTERS);
-        valueLetterMap.put(3, THREE_POINTS_LETTERS);
-        valueLetterMap.put(4, FOUR_POINTS_LETTERS);
-        valueLetterMap.put(5, FIVE_POINTS_LETTERS);
-        valueLetterMap.put(8, EIGHT_POINTS_LETTERS);
-        valueLetterMap.put(10, TEN_POINTS_LETTERS);
+        populateValueLetterMap();
+    }
+
+    private void populateValueLetterMap() {
+        for (POINTS value : POINTS.values()) {
+            Integer points = Integer.parseInt(value.name().substring(2));
+            String letters = value.getLetters();
+            valueLetterMap.put(points, letters);
+        }
     }
 
     int getScore() {
@@ -32,12 +26,32 @@ class Scrabble {
         int score = 0;
         char[] letters = word.toUpperCase(Locale.ENGLISH).toCharArray();
 
-        for (char letter:letters) {
+        for (char letter : letters) {
             score += valueLetterMap.entrySet().stream()
                     .filter(entry -> entry.getValue().indexOf(letter) != -1)
                     .mapToInt(Map.Entry::getKey).sum();
         }
 
         return score;
+    }
+
+    private enum POINTS {
+        P_1("AEIOULNRST"),
+        P_2("DG"),
+        P_3("BCMP"),
+        P_4("FHVWY"),
+        P_5("K"),
+        P_8("JX"),
+        P_10("QZ");
+
+        private String letters;
+
+        POINTS(String letters) {
+            this.letters = letters;
+        }
+
+        public String getLetters() {
+            return letters;
+        }
     }
 }
